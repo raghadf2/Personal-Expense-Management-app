@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>إدارة المصاريف الشخصية</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      max-width: 480px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 2.2rem;
+      color: #0b3954;
+    }
+
+    form {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      flex: 1 1 140px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #3a86ff;
+      outline: none;
+      background-color: #eef6ff;
+    }
+
+    button {
+      background-color: #3a86ff;
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    button:hover {
+      background-color: #265dff;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-height: 280px;
+      overflow-y: auto;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    li {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.1rem;
+      color: #1e293b;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    .delete-btn {
+      background-color: #ef4444;
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      background-color: #b91c1c;
+    }
+
+    .total {
+      margin-top: 30px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-align: center;
+      color: #0b3954;
+    }
+
+    /* Scrollbar */
+    ul::-webkit-scrollbar {
+      width: 7px;
+    }
+    ul::-webkit-scrollbar-track {
+      background: #f9fafb;
+    }
+    ul::-webkit-scrollbar-thumb {
+      background-color: #3a86ff;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>إدارة المصاريف الشخصية</h2>
+
+  <form id="expense-form">
+    <input type="text" id="desc" placeholder="وصف المصروف" required />
+    <input type="number" id="amount" placeholder="المبلغ" min="0.01" step="0.01" required />
+    <button type="submit">أضف</button>
+  </form>
+
+  <ul id="expense-list"></ul>
+
+  <div class="total">المجموع: 0 ر.س</div>
+
+  <script>
+    const form = document.getElementById('expense-form');
+    const descInput = document.getElementById('desc');
+    const amountInput = document.getElementById('amount');
+    const expenseList = document.getElementById('expense-list');
+    const totalDiv = document.querySelector('.total');
+
+    let expenses = [];
+
+    function renderExpenses() {
+      expenseList.innerHTML = '';
+
+      expenses.forEach((expense, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${expense.desc} - ${expense.amount.toFixed(2)} ر.س`;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'حذف';
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.onclick = () => {
+          expenses.splice(index, 1);
+          renderExpenses();
+          updateTotal();
+        };
+
+        li.appendChild(deleteBtn);
+        expenseList.appendChild(li);
+      });
+    }
+
+    function updateTotal() {
+      const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      totalDiv.textContent = `المجموع: ${total.toFixed(2)} ر.س`;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const desc = descInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+
+      if (desc === '' || isNaN(amount) || amount <= 0) {
+        alert('يرجى إدخال وصف صالح ومبلغ صحيح أكبر من صفر');
+        return;
+      }
+
+      expenses.push({ desc, amount });
+
+      descInput.value = '';
+      amountInput.value = '';
+
+      renderExpenses();
+      updateTotal();
+    });
+  </script>
+
+</body>
+</html>
+
+
